@@ -21,9 +21,11 @@ class HandlerZZK(object):
         self.host = host
         self.page_count = self.prop.property['page_count']
         self.room_count = self.prop.property['room_count']
+        self.land_count = self.prop.property['land_count']
 
         self.page_check = 1
         self.room_check = 1
+        self.land_check = 1
 
         # 筛选模板
         self.search_arr = re.compile('homestay_arr = \[(.*)\];')  # 基本信息
@@ -66,14 +68,9 @@ class HandlerZZK(object):
         thumb_dic, dics, price_dic, data_dic = self.format_all_data(response)
         # print("data_dic:%s\ndics:%s\nthumb_dic:%s\nprice_dic:%s"%(data_dic,dics,thumb_dic,price_dic))
 
-        # 初始化数据
-        print(len(data_dic))
-        for data in data_dic:
-            # 将数据插入表
-            handler_zzk_data.insert_item(data)
+        # 爬图片,同时将元信息连同图片一起插入数据库
+        self.crawl_thumb(dics=dics,thumb_dic=thumb_dic,city=city,data_dic=data_dic,room_num=0)
 
-        # 爬图片
-        self.crawl_thumb(dics=dics,thumb_dic=thumb_dic,city=city)
         return response
 
 
@@ -85,17 +82,15 @@ class HandlerZZK(object):
         # 从response中筛选数据 总共有多少家民宿
         room_list = search_room_num.findall(response.text)
         # 将筛选出的数据解析为页数
-        page_num = self.get_page_num(room_list)
+        page_num,room_num = self.get_page_num(room_list)
         # 根据页数循环请求爬取
         for i in range(page_num):
             # 判断是否进入上次一爬的范围
             if not self.check_page_scope():
                 continue
-
             if i>=page_num-1:
                 print('爬取完成')
                 return
-
             # 其他页的url
             other_url = url + '-p' + str(i+1)
             print("other_url:"+other_url)
@@ -104,13 +99,8 @@ class HandlerZZK(object):
             # 对新页的响应进行解析
             thumb_dic,dics,price_dic,data_dic = self.format_all_data(response)
 
-            # 初始化数据
-            for data in data_dic:
-                # 将数据插入表
-                handler_zzk_data.insert_item(data)
-
             # print("data_dic:%s\ndics:%s\nthumb_dic:%s\nprice_dic:%s" % (data_dic, dics, thumb_dic, price_dic))
-            self.crawl_thumb(dics,thumb_dic=thumb_dic,city=city)
+            self.crawl_thumb(dics,thumb_dic=thumb_dic,city=city,data_dic=data_dic,room_num=room_num)
 
 
     # 过滤并解析数据
@@ -123,42 +113,78 @@ class HandlerZZK(object):
 
         # eval无法解析 null, true, false之类的数据
         temp_str = str(homestay_list[0])
-
         clean_str = temp_str.replace('false', '0').replace('true', '1').replace('null','')
         dics = json.loads(clean_str)
         return dics
 
 
-
-    def crawl_thumb(self,dics,thumb_dic,city):
+    # 爬取房间展示图
+    def crawl_thumb(self,dics,thumb_dic,city,data_dic,room_num):
         # 计算当前页
         temp_page = self.page_count
+        # 存储本地图片路径
+        room_pic_paths = []
+        land_pic_paths = []
         print("正在爬第【%s】页的房间展示图" % temp_page)
         # 再次发送GET请求，请求图片
         for i in range(len(dics)):
-            # 防止重复爬取  房间数
-            if int(self.room_check)<int(self.room_count):
-                self.room_check = int(self.room_check)+1
-                continue
-
             id = dics[i]['id']
             thumb_url = thumb_dic[str(id)]
             thumb_url = str(thumb_url).replace("\\", "")
             response = self.session.get(url=thumb_url)
             data = response.content
-            with open('D:\serverUploadTemp\crawl_repository\%s_%s_page_%s_nums.jpg'%(city,self.page_count,self.room_count), 'wb') as fb:
+            # 爬取的房间图片在本地存放的路径
+            room_pic_path = 'D:\serverUploadTemp\crawl_repository\%s_%s_page_%s_nums.jpg'%(city,self.page_count,self.room_count)
+            room_pic_paths.append(room_pic_path)
+            # 防止重复爬取  房间数
+            if int(self.room_check) < int(self.room_count):
+                self.room_check = int(self.room_check) + 1
+                print("检测重复展示图，跳过...index:%d"%i)
+                continue
+            with open(room_pic_path, 'wb') as fb:
                 fb.write(data)
-
+            if str(room_num) != '0':
+                percentage = str(( (int(self.page_count)-1)*50 + int(self.room_count)+int(self.land_count))/ int(room_num)*2)
+            else:
+                percentage = '未知...'
+            print('第【%s】张展示图爬取成功！爬取进度【%s】' % (self.room_count,percentage))
             # 在配置文件中更新图片序号
             self.room_count_update()
+
+
+        print("第【%s】页房间展示图爬取完毕，开始爬第【%s】页的房东照片" % (temp_page,temp_page))
+        for i in range(len(data_dic)):
+            land_pic_url = data_dic[i]['user_photo']
+            response = self.session.get(land_pic_url)
+            land_pic_data = response.content
+            land_pic_path = 'D:\serverUploadTemp\crawl_repository\%s_%s_page_%s_pic.jpg' % (city,self.page_count, self.land_count)
+            land_pic_paths.append(land_pic_path)
+            # 防止重复爬取  房间数
+            if int(self.land_check) < int(self.land_count):
+                self.land_check = int(self.land_check) + 1
+                print("检测重复照片，跳过...index:%d"%i)
+                continue
+            with open(land_pic_path,'wb') as fb:
+                fb.write(land_pic_data)
+            if str(room_num) != '0':
+                percentage = str(( (int(self.page_count)-1) * 25 + int(self.room_count)+int(self.land_count)) / int(room_num)*2)
+            else:
+                percentage = '未知...'
+            print('第【%s】张照片爬取成功！爬取进度【%s】' % (self.land_count,percentage))
+            # 在配置文件中更新照片序号
+            self.land_count_update()
+
+            # 将数据插入表
+            handler_zzk_data.insert_item(data_dic[i],room_pic_paths[i],land_pic_paths[i])
+
             # 图片序号=25 则页数更新+1 图片数重置为1
-            if int(self.room_count) % 26 == 0:
+            if str(self.room_count)=='26' or str(self.land_count)=='26':
+                print(" *********************跳页******************* ")
                 # 页数+1
                 self.page_count_update()
                 # 图片数重置
                 self.room_count_reset()
-            print('第【%s】张爬取成功！目前是第【%s】张' % (str(int(self.room_count) - 1), self.room_count))
-
+                self.land_count_reset()
 
 
     # 页面更新
@@ -166,15 +192,27 @@ class HandlerZZK(object):
         self.page_check = int(self.page_check) + 1
         self.page_count = int(self.page_count) + 1
         # 每次变化都更新
-        self.prop.update_properties(page_count=self.page_count, room_count=self.room_count)
+        self.prop.update_properties(page_count=self.page_count, room_count=self.room_count,land_count=self.land_count)
 
 
     # room更新
     def room_count_update(self):
+        if int(self.room_check)==25 or int(self.room_count)==25:
+            return
         self.room_check = int(self.room_check) + 1
         self.room_count = int(self.room_count) + 1
         # 变化之后及时更新到配置文件
-        self.prop.update_properties(page_count=self.page_count, room_count=self.room_count)
+        self.prop.update_properties(page_count=self.page_count, room_count=self.room_count,land_count=self.land_count)
+
+
+    # land更新
+    def land_count_update(self):
+        self.land_check = int(self.land_check) +1
+        self.land_count = int(self.land_count) +1
+        if int(self.land_count)==25 or int(self.land_check)==25:
+            return
+        self.prop.update_properties(page_count=self.page_count, room_count=self.room_count,land_count=self.land_count)
+
 
 
     # 返回url对应的国家总共有多少页数据
@@ -187,7 +225,7 @@ class HandlerZZK(object):
         # 字符串转数值
         room_num = int(page_room_str)
         page_num = float(room_num/25) if room_num % 25 == 0 else floor(room_num / 25) + 1
-        return page_num
+        return page_num,room_num
 
     # 数据格式format
     def format_homestay_arr(self,homestay_arr_list,search_pattern):
@@ -205,9 +243,8 @@ class HandlerZZK(object):
                     dic = json.loads(dicStr)
                     dics.append(dic)
                 except:
-                    self.handlerLog.write_log(log_str='\n数据异常：\n%s' % str(dicStr))
-                    self.handlerLog.write_log(
-                        '\n%s页，%s号' % (str(self.prop.property['page_count']), str(self.prop.property['room_count'])))
+                    self.handlerLog.write_log('%s页，%s号' % (str(self.prop.property['page_count']), str(self.prop.property['room_count'])))
+                    self.handlerLog.write_log(log_str='数据异常：\n%s' % str(dicStr))
                     continue
         else:
             # 分割之后少了一个{
@@ -264,16 +301,29 @@ class HandlerZZK(object):
         return str
 
 
+    # 图片数重置
     def room_count_reset(self):
         self.room_check = 1
-        self.prop.reset_room(self.page_count)
+        self.prop.reset(self.page_count)
         self.room_count = self.prop.property['room_count']
+
+    # 照片数重置
+    def land_count_reset(self):
+        self.land_check = 1
+        self.prop.reset(self.page_count)
+        self.land_count = self.prop.property['land_count']
 
 
 
 if __name__ == '__main__':
     file_name = ''
+
     taiwan = 'taiwan'
+    thailand = 'thailand'
+    japan = 'japan'
+    korea = 'korea'
+    china = 'china'
+
 
     jp_url = 'http://japan.zizaike.com/search//x5000-o1'
     kr_url = 'http://kr.zizaike.com/search//x5000-o1'
@@ -288,5 +338,5 @@ if __name__ == '__main__':
     tw_host = 'taiwan.zizaike.com'
 
 
-    crawl = HandlerZZK(tl_host)
-    crawl.start_crawl(url=tl_url,city=taiwan)
+    crawl = HandlerZZK(zh_host)
+    crawl.start_crawl(url=zh_url,city=china)
