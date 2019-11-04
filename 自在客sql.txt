@@ -1,0 +1,196 @@
+民宿表 homestay_table
+
+homestay_id 民宿id		homestay_arr.id
+homestay_name 民宿名	homestay_arr.name
+homestay_address 民宿地址	homestay_arr.address
+is_speed 是否有速订		homestay_arr.speed_room
+is_promotion 促销		search_data.isPromotion
+is_boutique 精品民宿	search_data.isBoutiqueBnb
+baoche_service 包车		search_data.baocheServiceI
+jiesong_service 接送		search_data.jiesongServiceI
+daiding_service 代订	search_data.daidingServiceI
+dingcan_service 订餐	无
+huwai_service 户外		search_data.huwaiServiceI
+other_service 其他		search_data.otherServiceI
+comment_num 评论数量	search_data.commentNum
+jingdu 经度		search_data.slng
+weidu 纬度		search_data.slat
+min_price 最低价格		search_data.minPrice
+is_chinese_landlord 华人房东	search_data.isChineseLandlord
+//is_collect 收藏		search_data.isCollect
+latest_success_time 最近的成交时间	search_data.latestSuccessTimeS
+landlord_pic 房东照片	search_data.userPhoto
+homestay_index_pic  民宿首页图	search_data.homestayImage
+//is_first_order 首次订购	search_data.is_firstorder
+room_num 房间数量		search_data.room_num
+has_story 是否有故事	search_data.hasStoryI
+homestay_desc  民宿简介	换url截标签   http://%city%.zizaike.com/h/%homestay_id%
+full_refund_days  取消预订全额退款天数(前多少天)  换url截标签   http://%city%.zizaike.com/h/%homestay_id%
+cut_pay  取消预订扣款比例	换
+not_refund_days  不可取消预订天数(前多少天)   	换
+terms_txt  注意事项		换
+traffic_txt  交通文字		换url截标签   http://%city%.zizaike.com/h/%homestay_id%
+address_type  位于哪个国家	
+homestay_traffic_pic  民宿交通图	换url截标签   http://%city%.zizaike.com/h/%homestay_id%  对图片url再发请求
+homestay_logo_pic  民宿logo图片	换url截标签   http://%city%.zizaike.com/h/%homestay_id%  对图片url再发请求
+
+
+
+民宿图片表  homestay_pic_table
+homestay_pic_id  主键	int自增
+homestay_id  外键
+homestay_show_pic  民宿展示图	换url截标签   http://%city%.zizaike.com/h/%homestay_id%  对图片url再发请求
+homestay_slider_pic  民宿幻灯片下面的图	 	换url截标签   http://%city%.zizaike.com/h/%homestay_id%  对图片url再发请求
+
+
+
+房间表   room_table
+room_id  房间id	search_data.roomInfoList.roomId
+room_title  房间标题		search_data.roomInfoList.title
+homestay_id  外键
+breakfast  早餐	search_data.roomInfoList.breakfast
+chuangxing  床型	search_data.roomInfoList.chuangxing
+support_speed 支持速订	search_data.roomInfoList.isSpeed
+room_price  房间价格	search_data.roomInfoList.price
+room_model  房型		search_data.roomInfoList.roomModel
+room_wifi  是否有WiFi	search_data.roomInfoList.wifiI
+room_show_pic  房间展示图	换url截标签  http://%city%.zizaike.com/r/%room_id% 对图片url再请求
+room_area  房间面积	换url截标签  http://%city%.zizaike.com/r/%room_id%
+room_floor  楼层		换url截标签  http://%city%.zizaike.com/r/%room_id%
+is_window  是否有窗		换url截标签  http://%city%.zizaike.com/r/%room_id%
+is_tv  电视			换
+is_refrigerator  冰箱		换
+is_hot_water_24  24热水	..
+is_free_parking 免费停车	..
+is_smoking  吸烟		..
+is_air  空调		..
+	 热水壶		..
+is_kitchen  厨房		..
+is_shower  淋浴		..
+is_bathtub  浴缸		..
+is_carrypet  携带宠物	..
+is_towel  毛巾		..
+is_slipper  拖鞋		..
+is_disposable  一次性用品	..
+is_washer  洗衣机		..
+is_hlep_ticket  代订门票	..
+is_hlep_car  代订车		..
+is_reception_child 接待儿童	..
+is_ordered  被订购
+
+
+房间图片表   room_pic_table
+room_pic_id  主键
+room_id  外键
+room_show_pic  房间图片	换
+
+
+
+
+
+故事表 story_table
+
+
+
+
+房间信息表 room_info_table
+
+
+房间图片表 room_img_table
+roomimgID 主键
+roomID 外键
+index_room_pic 首页展示图(一张)	search_data.homeStayImage
+room_pic 展示图片			search_data.images
+
+1  43996  d:\server\1.img  d:\server\1.img
+2  43996  d:\server\1.img  d:\server\2.img
+2  43996  d:\server\1.img  d:\server\3.img
+
+
+房间评论表 comment_table
+commentID 主键		commentID   json
+userID 用户ID		userID	
+roomID 房间ID
+coomentTime 评论时间
+score 评分
+content 内容d
+userName 用户名
+userPic 用户头像
+
+
+
+
+用户表 user_table
+
+userID 主键
+userName 用户名		
+registryTime 注册时间	
+userType 用户类型(用户/房东)
+paddword 密码
+isFreeze 是否被冻结
+
+
+用户详情表 user_info_table
+
+user_info_id 主键
+userID 外键
+userNickname 昵称
+userGender 性别
+userAge 年龄
+userEmail 邮箱
+userPhone 手机
+userForm 故乡
+userLive 现住址
+
+
+用户收藏的民宿表
+
+
+用户订购过的民宿表
+
+
+房东详情表
+
+
+封禁表 freeze_table
+
+
+
+
+
+
+图片爬下来会有上万张，这上万张图片怎么处理？
+要将图片路径都存入数据库
+其他的上万条民宿的其他字段
+
+这个问题好像可以通过pymysql解决。试试。
+
+
+
+一页25条
+日本
+http://japan.zizaike.com/search//x5000-o1 第一页
+http://japan.zizaike.com/search//x5000-o1-p1 第二页
+http://japan.zizaike.com/search//x5000-o1-p2 第三页
+http://japan.zizaike.com/search//x5000-o1-p105 第106，最后一页，5 条数据
+
+韩国
+http://kr.zizaike.com/search//x5000-o1 第一页
+http://kr.zizaike.com/search//x5000-o1-p1 第二页
+......
+
+
+
+GET http://japan.zizaike.com/search/ HTTP/1.1
+Host: japan.zizaike.com
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3
+Referer: http://kr.zizaike.com/search//x5000-o1-p1
+Accept-Encoding: gzip, deflate
+Accept-Language: zh-CN,zh;q=0.9
+Cookie: zzk_guid=CE52A462-9368-E75F-6451-3C6E89FEE57E; zzkcamp=null; gr_user_id=ece4ff02-bd48-4d41-8638-e9ed7272c337; SESSce5fe79b64d12c66951c3b489d7c1048=kGoR-ohGn-H56V5AwJ0QP6z5jGAGUQ8XIATNaCAt6bY; _ga=GA1.2.1704660479.1570958828; Hm_lvt_2fa176e08279afc52ea6d53d771efa9b=1572266959,1572269484,1572270337,1572283207; Hm_lpvt_2fa176e08279afc52ea6d53d771efa9b=1572283207; gr_session_id_9ab0ff5db9d74358989b725953712228=73c4c553-c3cf-4b45-9f42-2520fb66ba6d; gr_session_id_9ab0ff5db9d74358989b725953712228_73c4c553-c3cf-4b45-9f42-2520fb66ba6d=false
+
+
+<a class="title-link" href="(.*)" target="_blank" title="(.*)">(.*)</a>
