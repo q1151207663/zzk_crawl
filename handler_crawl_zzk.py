@@ -434,9 +434,13 @@ class HandlerZZK(object):
         refund_days = refund_days_pattern.findall(txt_target)
         if refund_days!=None and len(refund_days)>0:
             full_refund_days = refund_days[0]
-            not_refund_days = refund_days[1]
             mydata['full_refund_days'] = full_refund_days
-            mydata['not_refund_days'] = not_refund_days
+            # 人算不如天算。。
+            if len(refund_days)>1:
+                not_refund_days = refund_days[1]
+                mydata['not_refund_days'] = not_refund_days
+            else:
+                mydata['not_refund_days'] = ''
         else:
             mydata['full_refund_days'] = ''
             mydata['not_refund_days'] = ''
