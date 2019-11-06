@@ -13,5 +13,6 @@ requests，sqlalchemy，pymysql
 这三个参数是防止重复爬取的
 只需要在换另一个国家时将它们重置为1即可
 再创建数据库zzk    create database zzk;
-先运行create_zzk_table.py
-再运行handler_crawl_zzk.py
+先安装三方库，dos界面pip install requests 依次安装需要的三方库
+运行create_zzk_table.py创建数据表
+最后运行handler_crawl_zzk.py即可开始爬取
