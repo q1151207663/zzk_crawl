@@ -482,8 +482,9 @@ class HandlerZZK(object):
         tfc_pic_url = tfc_pic_pattern.findall(txt_target)
         if tfc_pic_url!=None and len(tfc_pic_url)>0:
             temp_url = str(tfc_pic_url[0])+'original.jpg'
-            temp_response = self.session.get(temp_url)
-            traffic_path = 'D:\serverUploadTemp\crawl_repository\%s\\traffic'
+            requests.packages.urllib3.disable_warnings()
+            temp_response = self.session.get(temp_url,verify=False)
+            traffic_path = 'D:\serverUploadTemp\crawl_repository\%s\\traffic'%city
             if not os.path.exists(traffic_path):
                 os.makedirs(traffic_path)
             traffic_name = traffic_path+'\logo_%s_%s.jpg'% (homestay_id, str(i + 1))
