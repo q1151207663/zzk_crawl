@@ -9,10 +9,10 @@ import re
 
 from math import floor
 
-from zzk_crawl.create_zzk_tables import ZZKRoomTable, ZZKtables
-from zzk_crawl.insert_zzk_tables import handler_zzk_data
-from zzk_crawl.zzk_log import HandlerLog
-from zzk_crawl.zzk_prop import Properties
+from create_zzk_tables import ZZKRoomTable, ZZKtables
+from insert_zzk_tables import handler_zzk_data
+from zzk_log import HandlerLog
+from zzk_prop import Properties
 
 
 class HandlerZZK(object):

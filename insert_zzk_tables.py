@@ -1,9 +1,9 @@
 import time
 
-from zzk_crawl.create_zzk_tables import ZZKtables, ZZKHomestayPicTable, ZZKRoomTable, ZZKRoomPicTable
-from zzk_crawl.create_zzk_tables import Session
-from zzk_crawl.zzk_log import HandlerLog
-from zzk_crawl.zzk_prop import Properties
+from create_zzk_tables import ZZKtables, ZZKHomestayPicTable, ZZKRoomTable, ZZKRoomPicTable
+from create_zzk_tables import Session
+from zzk_log import HandlerLog
+from zzk_prop import Properties
 
 
 class HandlerZZKData(object):
