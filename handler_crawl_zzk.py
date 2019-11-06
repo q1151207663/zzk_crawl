@@ -481,7 +481,15 @@ class HandlerZZK(object):
         tfc_pic_pattern = re.compile('<img src="(.*)original.jpg"/>')
         tfc_pic_url = tfc_pic_pattern.findall(txt_target)
         if tfc_pic_url!=None and len(tfc_pic_url)>0:
-            mydata['tfc_pic_url'] = tfc_pic_url[0]
+            temp_url = str(tfc_pic_url[0])+'original.jpg'
+            temp_response = self.session.get(temp_url)
+            traffic_path = 'D:\serverUploadTemp\crawl_repository\%s\\traffic'
+            if not os.path.exists(traffic_path):
+                os.makedirs(traffic_path)
+            traffic_name = traffic_path+'\logo_%s_%s.jpg'% (homestay_id, str(i + 1))
+            with open(traffic_name,'wb') as fw:
+                fw.write(temp_response.content)
+            mydata['tfc_pic_url'] = traffic_name
         else:
             mydata['tfc_pic_url'] = ''
 
@@ -514,6 +522,7 @@ class HandlerZZK(object):
                 mydata['homestay_logo_url'] = logo_path
             else:
                 mydata['homestay_logo_url'] = ''
+
 
         return mydata
 
