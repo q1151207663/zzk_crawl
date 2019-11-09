@@ -686,23 +686,6 @@ if __name__ == '__main__':
 
     prop = Properties()
 
-    """taiwan = 'taiwan'
-    thailand = 'thailand'
-    japan = 'japan'
-    korea = 'korea'
-    china = 'china'
-    jp_url = 'http://japan.zizaike.com/search//x5000-o1'
-    kr_url = 'http://kr.zizaike.com/search//x5000-o1'
-    tl_url = 'http://thailand.zizaike.com/search//x5000-o1'
-    zh_url = 'http://zh.zizaike.com/search//x5000-o1'
-    tw_url = 'http://taiwan.zizaike.com/search//x5000-o1'
-    jp_host = 'japan.zizaike.com'
-    kr_host = 'kr.zizaike.com'
-    tl_host = 'thailand.zizaike.com'
-    zh_host = 'zh.zizaike.com'
-    tw_host = 'taiwan.zizaike.com'"""
-
-
     myswitch = {
         'japan': {'url': 'http://japan.zizaike.com/search//x5000-o1', 'host': 'japan.zizaike.com'},
         'taiwan': {'url': 'http://taiwan.zizaike.com/search//x5000-o1', 'host': 'taiwan.zizaike.com'},
